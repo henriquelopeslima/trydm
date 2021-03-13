@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\EventRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,6 +38,16 @@ class Event
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $description;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Lecture::class, mappedBy="event", orphanRemoval=true)
+     */
+    private $lectures;
+
+    public function __construct()
+    {
+        $this->lectures = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -88,5 +100,40 @@ class Event
         $this->description = $description;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Lecture[]
+     */
+    public function getLectures(): Collection
+    {
+        return $this->lectures;
+    }
+
+    public function addLecture(Lecture $lecture): self
+    {
+        if (!$this->lectures->contains($lecture)) {
+            $this->lectures[] = $lecture;
+            $lecture->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLecture(Lecture $lecture): self
+    {
+        if ($this->lectures->removeElement($lecture)) {
+            // set the owning side to null (unless already changed)
+            if ($lecture->getEvent() === $this) {
+                $lecture->setEvent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->title;
     }
 }

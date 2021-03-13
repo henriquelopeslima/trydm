@@ -42,6 +42,12 @@ class Lecture
      */
     private $description;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Event::class, inversedBy="lectures")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $event;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,5 +111,22 @@ class Lecture
         $this->description = $description;
 
         return $this;
+    }
+
+    public function getEvent(): ?Event
+    {
+        return $this->event;
+    }
+
+    public function setEvent(?Event $event): self
+    {
+        $this->event = $event;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->title;
     }
 }
