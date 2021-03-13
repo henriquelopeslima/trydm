@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Evento - {{ event }}{% endblock %}
+
+{% block body %}
+  <h1>{{ event }}</h1>
+  <h2>{{ event.description }}</h2>
+  <p>Vai começar no dia {{ event.getDateBegin|date('d/m/Y') }} às {{ event.getDateBegin|date('h:s') }} e vai terminar no dia {{ event.getDateEnd|date('d/m/Y') }} às {{ event.getDateEnd|date('h:s') }}</p>
+  <hr>
+  <h2 style="margin-bottom: 2rem">Palestras</h2><p>
+  <div class="row">
+    <div class="col-12 col-lg-8">
+      {% if lectures|length > 0 %}
+        {% for lecture in lectures %}
+          <div class="media shadow border rounded-lg p-3 mb-4">
+            <div class="media-body">
+              <h4 class="font-weight-light mb-0" data-toggle="collapse" href="#collapseExample{{ lecture.id }}" role="button" aria-expanded="false" aria-controls="collapseExample{{ lecture.id }}">
+                {{ lecture.title }}
+              </h4>
+              <div class="collapse" id="collapseExample{{ lecture.id }}">
+                <div class="mb-2">
+                  <small class="text-muted text-uppercase lecture-text">
+                    {{ lecture.description }}
+                  </small>
+                </div>
+                <div class="comment-text">
+                  {{ lecture.description }}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        <div>Temos {{ lectures|length }} palestras cadastradas : )</div>
+        {#                {% if previous >= 0 %}#}
+        {#                    <a href="{{ path('event', { id: event.id, offset: previous }) }}">Voltar</a>#}
+        {#                {% endif %}#}
+        {#                {% if next < comments|length %}#}
+        {#                    <a href="{{ path('event', { id: event.id, offset: next }) }}">Avançar</a>#}
+        {#                {% endif %}#}
+      {% else %}
+        <div class="text-center">
+          Não temos nenhuma palestra :(
+        </div>
+      {% endif %}
+    </div>
+    {#        <div class="col-12 col-lg-4">#}
+    {#            <div class="bg-light shadow border rounded-lg p-4">#}
+    {#                <h3 class="font-weight-light">#}
+    {#                    Adiciona uma palestra#}
+    {#                </h3>#}
+    {#                {{ form(comment_form) }}#}
+    {#            </div>#}
+    {#        </div>#}
+  </div>
+{% endblock %}
+
