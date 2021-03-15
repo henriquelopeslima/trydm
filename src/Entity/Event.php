@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=EventRepository::class)
  */
-class Event
+class Event implements \JsonSerializable
 {
     /**
      * @ORM\Id
@@ -135,5 +135,16 @@ class Event
     public function __toString(): string
     {
         return $this->title;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'title' => $this->getTitle(),
+            'description' => $this->getDescription(),
+            'date_begin' => $this->getDateBegin()->format("Y-m-d h:i:s"),
+            'date_end' => $this->getDateEnd()->format("Y-m-d h:i:s")
+        ];
     }
 }

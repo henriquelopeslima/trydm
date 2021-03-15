@@ -17,19 +17,25 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-class EventController extends AbstractController
+class HomeController extends AbstractController
 {
+    private $twig;
+
+    public function __construct(Environment $twig)
+    {
+        $this->twig = $twig;
+    }
+
     /**
-     * @Route("/", name="events")
-     * @param Environment $twig
+     * @Route("/", name="homepage")
      * @param EventRepository $eventRepository
      * @return Exception|Response|LoaderError|RuntimeError|SyntaxError
      */
-    public function index(Environment $twig, EventRepository $eventRepository)
+    public function index(EventRepository $eventRepository)
     {
         try {
-            return new Response($twig->render('event/index.html.twig', [
-                'events' => $eventRepository->findAll()
+            return new Response($this->twig->render('index.html.twig', [
+                'events' => $eventRepository->findAll(),
             ]));
         } catch (LoaderError | RuntimeError | SyntaxError $e) {
             return $e;
@@ -37,8 +43,7 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route("/event/{id}", name="event")
-     * @param Environment $twig
+     * @Route("/evento/{id}", name="event")
      * @param Event $event
      * @param LectureRepository $lectureRepository
      * @return Response
@@ -46,10 +51,10 @@ class EventController extends AbstractController
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    public function show(Environment $twig, Event $event, LectureRepository $lectureRepository): Response
+    public function show(Event $event, LectureRepository $lectureRepository): Response
     {
 
-        return new Response($twig->render('event/show.html.twig', [
+        return new Response($this->twig->render('show.html.twig', [
             'event' => $event,
             'lectures' => $lectureRepository->findBy(['event' => $event]),
         ]));

@@ -3,9 +3,10 @@
 {% block title %}Evento - {{ event }}{% endblock %}
 
 {% block body %}
-  <h1>{{ event }}</h1>
-  <h2>{{ event.description }}</h2>
-  <p>Vai começar no dia {{ event.getDateBegin|date('d/m/Y') }} às {{ event.getDateBegin|date('h:s') }} e vai terminar no dia {{ event.getDateEnd|date('d/m/Y') }} às {{ event.getDateEnd|date('h:s') }}</p>
+  <h1 style="font-family: 'Zilla Slab', serif; font-weight: 600;">{{ event }}</h1>
+  <hr>
+  <h2 style="font-family: 'Zilla Slab', serif; font-weight: 400; font-max-size: 16px">{{ event.description }}</h2>
+  <p style="font-size: 1.2em">Vai começar no dia <span class="font-date">{{ event.getDateBegin|date('d/m/Y') }}</span> às <span class="font-date">{{ event.getDateBegin|date('h:s') }}</span> e vai terminar no dia <span class="font-date">{{ event.getDateEnd|date('d/m/Y') }}</span> às <span class="font-date">{{ event.getDateEnd|date('h:s') }}</span></p>
   <hr>
   <h2 style="margin-bottom: 2rem">Palestras</h2><p>
   <div class="row">
@@ -19,9 +20,6 @@
               </h4>
               <div class="collapse" id="collapseExample{{ lecture.id }}">
                 <div class="mb-2">
-                  <small class="text-muted text-uppercase lecture-text">
-                    {{ lecture.description }}
-                  </small>
                 </div>
                 <div class="comment-text">
                   {{ lecture.description }}
@@ -38,8 +36,8 @@
         {#                    <a href="{{ path('event', { id: event.id, offset: next }) }}">Avançar</a>#}
         {#                {% endif %}#}
       {% else %}
-        <div class="text-center">
-          Não temos nenhuma palestra :(
+        <div style="margin-bottom: 2rem; font-size: 22px">
+          Não temos nenhuma palestra : /
         </div>
       {% endif %}
     </div>

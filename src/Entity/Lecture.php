@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=LectureRepository::class)
  */
-class Lecture
+class Lecture implements \JsonSerializable
 {
     /**
      * @ORM\Id
@@ -128,5 +128,18 @@ class Lecture
     public function __toString(): string
     {
         return $this->title;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'title' => $this->getTitle(),
+            'description' => $this->getDescription(),
+            'date' => $this->getDate()->format("Y-m-d"),
+            'hour_begin' => $this->getHourBegin()->format("h:i"),
+            'hour_end' => $this->getHourEnd()->format("h:i"),
+            'event_id' => $this->getEvent()->getId()
+        ];
     }
 }
