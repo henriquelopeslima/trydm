@@ -22,7 +22,7 @@ class EventService
 
     public function delete(int $id){
         $event = $this->repository->findBy(["id"=>$id]);
-        if (isset($event) ) {
+        if (!empty($event) ) {
             /** @var Event $event */
             $this->repository->delete($event);
         }

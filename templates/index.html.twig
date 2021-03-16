@@ -16,7 +16,6 @@
                                 <hr>
                                 <p>Data inicio: <span class="font-date">{{ event.getDateBegin|date('d/m/Y') }}</span> <br>Data final: <span class="font-date">{{ event.getDateEnd|date('d/m/Y') }}</span></p>
                             </div>
-
                             <a href="{{ path('event', { id: event.id }) }}"
                                class="btn btn-sm btn-outline-dark">
                                 Abrir

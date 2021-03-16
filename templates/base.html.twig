@@ -29,15 +29,26 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="header-menu">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item mr-3">
-                        <a class="btn btn-sm btn-outline-light" href="{{ path('login_page') }}">
-                            Login
-                        </a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent"></div>
+            <ul class="nav navbar-nav navbar-right">
+                {% if app.user %}
+                    <li><a class="nav-link" href="{{ path('app_logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a class="nav-link" href="{{ path('app_login') }}">Login</a></li>
+                    <li>
+                        <a class="nav-link" href="{{ path('registration') }}">Register</a>
                     </li>
-                </ul>
-            </div>
+                {% endif %}
+            </ul>
+{#            <div class="collapse navbar-collapse" id="header-menu">#}
+{#                <ul class="navbar-nav ml-auto">#}
+{#                    <li class="nav-item mr-3">#}
+{#                        <a class="btn btn-sm btn-outline-light" href="{{ path('login_page') }}">#}
+{#                            Login#}
+{#                        </a>#}
+{#                    </li>#}
+{#                </ul>#}
+{#            </div>#}
         </div>
     </nav>
 </header>

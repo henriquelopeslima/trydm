@@ -17,6 +17,9 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
+///**
+// * @Route("web", name="web_")
+// */
 class HomeController extends AbstractController
 {
     private $twig;

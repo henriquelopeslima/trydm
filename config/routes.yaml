@@ -6,17 +6,12 @@ register:
     controller: App\Controller\Api\AuthController::register
     methods: POST
 
+login:
+    path: /login_check
+    methods:  POST
+
 api:
     path: /api
 
-manager:
-    path: /manager
-
-login:
-    path: /login_check
-    controller: App\Controller\AuthController::login
-    methods:  POST
-
-#login_check:
-#    path:     /login_check
-#    methods:  [POST]
+web:
+    path: /web
