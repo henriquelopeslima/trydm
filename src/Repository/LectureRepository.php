@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Lecture;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -14,9 +15,23 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class LectureRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $manager;
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $manager)
     {
         parent::__construct($registry, Lecture::class);
+        $this->manager = $manager;
+    }
+
+    public function save(Lecture $event)
+    {
+        $this->manager->persist($event);
+        $this->manager->flush();
+    }
+
+    public function delete(Lecture $event)
+    {
+        $this->manager->remove($event);
+        $this->manager->flush();
     }
 
     // /**

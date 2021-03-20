@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services;
-
 
 use App\Entity\Event;
 use App\Repository\EventRepository;
@@ -20,10 +18,19 @@ class EventService
         $this->repository->save($event);
     }
 
-    public function delete(int $id){
-        $event = $this->repository->findBy(["id"=>$id]);
+    public function delete(int $id): ?Event
+    {
+        $event = $this->repository->findOneBy(["id"=>$id]);
         if (!empty($event) ) {
-            /** @var Event $event */
+            $this->repository->delete($event);
+        }
+        return $event;
+    }
+
+    public function update(int $id): ?Event
+    {
+        $event = $this->repository->findOneBy(["id"=>$id]);
+        if (!empty($event) ) {
             $this->repository->delete($event);
         }
         return $event;
@@ -32,5 +39,10 @@ class EventService
     public function findAll(): array
     {
         return $this->repository->findAll();
+    }
+
+    public function getById($id): Event
+    {
+        return $this->repository->findOneBy(['id' => $id]);
     }
 }

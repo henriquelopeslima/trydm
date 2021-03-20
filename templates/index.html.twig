@@ -3,6 +3,18 @@
 {% block title %}Eventos{% endblock %}
 
 {% block body %}
+    <div class="row">
+        {% if app.user %}
+            <div class="col-12 text-center" style="margin-bottom: 2em">
+                <button class="btn btn-lg btn-outline-dark" data-toggle="modal" data-target="#modalCreateEvent">
+                    Criar evento
+                </button>
+            </div>
+        {% endif %}
+        {% include 'event/create.html.twig' %}
+        {% include 'event/edit.html.twig' %}
+    </div>
+
     {% for row in events|batch(4) %}
         <div class="row">
             {% for event in row %}
@@ -16,14 +28,206 @@
                                 <hr>
                                 <p>Data inicio: <span class="font-date">{{ event.getDateBegin|date('d/m/Y') }}</span> <br>Data final: <span class="font-date">{{ event.getDateEnd|date('d/m/Y') }}</span></p>
                             </div>
-                            <a href="{{ path('event', { id: event.id }) }}"
-                               class="btn btn-sm btn-outline-dark">
-                                Abrir
-                            </a>
+                            <div class="row">
+                                <div class="col-4">
+                                    <a href="{{ path('event', { id: event.id }) }}"
+                                       class="btn btn-sm btn-outline-dark">
+                                        Abrir
+                                    </a>
+                                </div>
+                                {% if app.user %}
+                                    <div class="col-4">
+                                        <div href=""
+                                             class="btn btn-sm btn-outline-warning editEvent"  data-toggle="modal" data-target="#modalEditEvent" data-id="{{ event.id }}">
+                                            Editar
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div href="" onclick="deleteEvent({{ event.id }})"
+                                             class="btn btn-sm btn-outline-danger">
+                                            Excluir
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% endfor %}
+
+    {% if app.user %}
+        <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js" integrity="sha512-UdIMMlVx0HEynClOIFSyOrPggomfhBKJE28LKl8yR3ghkgugPnG6iLfRfHwushZl1MOPSY6TsuBDGPK2X4zYKg==" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw==" crossorigin="anonymous"></script>
+
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+        <script>
+            let idEvent = 0;
+
+            function createEvent(){}
+
+            function editEvent(){}
+
+            function deleteEvent(id) {
+                Swal.fire({
+                    title: 'Tem certeza?',
+                    text: "Apagar o evento, apagara as palestras consequentemente!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sim, simbora!',
+                    cancelButtonText: 'Naum minino'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire(
+                            'Apagado!',
+                            'O evento e suas palestras foram apagados',
+                            'success'
+                        ).then((_) => window.location.assign('http://127.0.0.1:8000/'));
+
+                        let url = 'http://127.0.0.1:8000/api/event/delete/' + id;
+                        let xhr = new XMLHttpRequest();
+                        xhr.open('DELETE', url, true);
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200)
+                                    console.log(JSON.parse(xhr.responseText));
+                            }
+                        }
+                        xhr.send();
+                    }
+                })
+            }
+
+            function formatResult(form) {
+                result = {};
+                $.each($(form).serializeArray(), function() {
+                    result[this.name] = this.value;
+                });
+                return result;
+            }
+
+            jQuery(function($) {
+                $(".date").mask("99/99/9999");
+
+                $(".editEvent").click(function(){
+                    idEvent = $(this).data('id');
+                    console.log(idEvent);
+                });
+
+                $("#form-create-event").validate({
+                    rules: {
+                        title: {
+                            required: true,
+                            minlength: 5
+                        },
+                        description: {
+                            required: true,
+                            minlength: 5,
+                        },
+                        date_begin: {
+                            required: true,
+                        },
+                        date_end: {
+                            required: true,
+                        },
+                    },
+                    submitHandler: function(form) {
+                        $(form).find('button[type=submit]').addClass("disabled btn-progress");
+                        let data = formatResult(form);
+                        let date_begin = moment(Date(data.date_begin)).format("YYYY-MM-DD")
+                        let date_end = moment(Date(data.date_end)).format("YYYY-MM-DD")
+                        $.ajax({
+                            url:'http://127.0.0.1:8000/api/event/create',
+                            type: 'POST',
+                            datatype: 'json',
+                            data: {
+                                title: data.title,
+                                description: data.description,
+                                date_begin: date_begin,
+                                date_end: date_end,
+                            },
+                            success: function(response) {
+                                Swal.fire(
+                                    'Criado!',
+                                    'O evento foi criado',
+                                    'success'
+                                ).then((_) => window.location.assign('http://127.0.0.1:8000/'));
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Evento não criado!',
+                                })
+                            },
+                            complete: function() {
+                                $(form).find('button[type=submit]').removeClass("disabled btn-progress");
+                                $(form).reset();
+                            }
+                        });
+                    }
+                });
+
+                $("#form-edit-event").validate({
+                    rules: {
+                        title: {
+                            required: true,
+                            minlength: 5
+                        },
+                        description: {
+                            required: true,
+                            minlength: 5,
+                        },
+                        date_begin: {
+                            required: true,
+                        },
+                        date_end: {
+                            required: true,
+                        },
+                    },
+                    submitHandler: function(form) {
+                        $(form).find('button[type=submit]').addClass("disabled btn-progress");
+                        let data = formatResult(form);
+                        let date_begin = moment(Date(data.date_begin)).format("YYYY-MM-DD")
+                        let date_end = moment(Date(data.date_end)).format("YYYY-MM-DD")
+                        $.ajax({
+                            url:'http://127.0.0.1:8000/api/event/update/' + idEvent,
+                            type: 'PUT',
+                            datatype: 'json',
+                            data: {
+                                title: data.title,
+                                description: data.description,
+                                date_begin: date_begin,
+                                date_end: date_end,
+                            },
+                            success: function(response) {
+                                Swal.fire(
+                                    'Atualizado!',
+                                    'O evento foi atualizado',
+                                    'success'
+                                ).then((_) => window.location.assign('http://127.0.0.1:8000/'));
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Evento não atualizado!',
+                                })
+                            },
+                            complete: function() {
+                                $(form).find('button[type=submit]').removeClass("disabled btn-progress");
+                                $(form).reset();
+                                idEvent = 0;
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    {% endif %}
 {% endblock %}

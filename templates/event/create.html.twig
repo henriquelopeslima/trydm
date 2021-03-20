@@ -1,0 +1,45 @@
+{% block body %}
+    <div class="modal fade" id="modalCreateEvent" tabindex="-1" role="dialog" aria-labelledby="Criar Evento Modal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="form-create-event">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Novo evento</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="tile" class="col-form-label">Título:</label>
+                            <input type="text" name="title" class="form-control" id="title">
+                        </div>
+                        <div class="form-row">
+                            <div class="col-lg-6">
+                                <div id="date_begin_parent" class="form-group">
+                                    <label for="date_begin" class="col-form-label">Data de inicio:</label>
+                                    <input type="tel" name="date_begin" class="form-control date" id="date_begin">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div id="date_end_parent" class="form-group">
+                                    <label for="date_end" class="col-form-label">Data final:</label>
+                                    <input type="tel" name="date_end" class="form-control date" id="date_end">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description" class="col-form-label">Descrição:</label>
+                            <textarea class="form-control" name="description" id="description"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancelar</button>
+                        <button type="submit"  class="btn btn-outline-dark">Criar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\LectureRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=LectureRepository::class)
@@ -19,26 +20,31 @@ class Lecture implements \JsonSerializable
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Homi eu preciso do título.")
      */
     private $title;
 
     /**
      * @ORM\Column(type="date")
+     * @Assert\NotBlank(message="Minino eu preciso da data.")
      */
     private $date;
 
     /**
      * @ORM\Column(type="time")
+     * @Assert\NotBlank(message="É preciso da hora de inicio.")
      */
     private $hour_begin;
 
     /**
      * @ORM\Column(type="time")
+     * @Assert\NotBlank(message="É preciso da hora final.")
      */
     private $hour_end;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="A descrição é requerida.")
      */
     private $description;
 
@@ -47,6 +53,12 @@ class Lecture implements \JsonSerializable
      * @ORM\JoinColumn(nullable=false)
      */
     private $event;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message="O palestrante é requerido.")
+     */
+    private $speaker;
 
     public function getId(): ?int
     {
@@ -128,6 +140,18 @@ class Lecture implements \JsonSerializable
     public function __toString(): string
     {
         return $this->title;
+    }
+
+    public function getSpeaker(): ?string
+    {
+        return $this->speaker;
+    }
+
+    public function setSpeaker(?string $speaker): self
+    {
+        $this->speaker = $speaker;
+
+        return $this;
     }
 
     public function jsonSerialize(): array

@@ -159,6 +159,14 @@ class AppFixtures extends Fixture
             ],
         ];
 
+        $speaker_local = [
+            "0" => "Alessandro Feitoza",
+            "1" => "Fr Daniel Lima",
+            "2" => "Maria Clara",
+            "3" => "Nicolas Grekas",
+            "4" => "Cyrille Grandval"
+        ];
+
         foreach ($events_local as $local) {
             $event = new Event();
             $event->setTitle($local["title"]);
@@ -177,6 +185,7 @@ class AppFixtures extends Fixture
             $lecture->setHourBegin(new \DateTime($local["hour_begin"]));
             $lecture->setHourEnd(new \DateTime($local["hour_end"]));
             $lecture->setEvent($events[$local["event_key"]]);
+            $lecture->setSpeaker($speaker_local[(random_int(0,4))]);
             $manager->persist($lecture);
         }
 

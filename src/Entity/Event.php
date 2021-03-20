@@ -6,6 +6,8 @@ use App\Repository\EventRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity(repositoryClass=EventRepository::class)
@@ -21,21 +23,26 @@ class Event implements \JsonSerializable
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Minino eu preciso do título.")
+     * @Assert\Length(min=5)
      */
     private $title;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank(message="É requirido a data de início.")
      */
     private $date_begin;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank(message="É requirido a data final.")
      */
     private $date_end;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message="É requirido a descrição.")
      */
     private $description;
 

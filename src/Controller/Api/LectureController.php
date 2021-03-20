@@ -2,9 +2,10 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Event;
-use App\Services\EventService;
 use Exception;
+use App\Entity\Event;
+use App\Entity\Lecture;
+use App\Services\LectureService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,16 +14,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * @Route("api/event", name="event")
+ * @Route("api/lecture", name="lecture")
  */
-class EventController extends AbstractController
+class LectureController extends AbstractController
 {
 
-    private $eventService;
+    private $lectureService;
 
-    public function __construct(EventService $eventService)
+    public function __construct(LectureService $lectureService)
     {
-        $this->eventService = $eventService;
+        $this->lectureService = $lectureService;
     }
 
     /**
@@ -30,7 +31,7 @@ class EventController extends AbstractController
      */
     public function index(): Response
     {
-        return $this->json($this->eventService->findAll());
+        return $this->json($this->lectureService->findAll());
     }
 
     /**
@@ -44,25 +45,34 @@ class EventController extends AbstractController
         try{
             $request = $this->transformJsonBody($request);
 
-            $event = new Event();
+            $lecture = new Lecture();
 
-            $event->setTitle($request->get('title') ?? "");
-            $event->setDescription($request->get('description') ?? "");
-            $event->setDateBegin( new \DateTime($request->get('date_begin')));
-            $event->setDateEnd( new \DateTime($request->get('date_end')));
+            $lecture->setTitle($request->get('title') ?? "");
+            $lecture->setDescription($request->get('description') ?? "");
+            $lecture->setDate( new \DateTime((date("Y-m-d", strtotime($request->get("date"))))));
+            $lecture->setHourBegin( new \DateTime((date("H:i", strtotime($request->get("hour_begin"))))));
+            $lecture->setHourEnd( new \DateTime((date("H:i", strtotime($request->get("hour_end"))))));
+            $lecture->setSpeaker($request->get('speaker') ?? "");
 
-            $errors = $validator->validate($event);
+            $em = $this->getDoctrine()->getManager();
+            $event = $em->find(Event::class, ["id" => $request->get("event_id")]);
+
+            if ($event instanceof Event) {
+                $lecture->setEvent($event);
+            }
+
+            $errors = $validator->validate($lecture);
 
             if(count($errors) > 0){
                 return $this->json($errors, 400);
             }
 
-            $this->eventService->save($event);
+            $this->lectureService->save($lecture);
 
             $data = [
                 'status' => 200,
-                'success' => "Event added successfully",
-                'event' => $event
+                'success' => "Lecture added successfully",
+                'event' => $lecture
             ];
 
             return $this->response($data);
@@ -88,39 +98,52 @@ class EventController extends AbstractController
     public function update(int $id, Request $request, ValidatorInterface $validator): JsonResponse
     {
         try{
-            $event = $this->eventService->getById($id);
-
+            $lecture = $this->lectureService->getById($id);
             $request = $this->transformJsonBody($request);
 
             if($request->get('title')){
-                $event->setTitle($request->get('title') ?? "");
+                $lecture->setTitle($request->get('title') ?? "");
             }
             if($request->request->get('description')){
-                $event->setDescription($request->get('description') ?? "");
+                $lecture->setDescription($request->get('description') ?? "");
             }
-            if($request->request->get('date_begin')){
-                $event->setDateBegin(new \DateTime($request->get('date_begin')));
+            if($request->request->get('date')){
+                $lecture->setDate( new \DateTime((date("Y-m-d", strtotime($request->get("date"))))));
             }
-            if($request->request->get('date_end')){
-                $event->setDateEnd(new \DateTime($request->get('date_end')));
+            if($request->request->get('hour_begin')){
+                $lecture->setHourBegin( new \DateTime((date("H:i", strtotime($request->get("hour_begin"))))));
+            }
+            if($request->request->get('hour_end')){
+                $lecture->setHourEnd( new \DateTime((date("H:i", strtotime($request->get("hour_end"))))));
+            }
+            if($request->request->get('speaker')){
+                $lecture->setSpeaker($request->get('speaker') ?? "");
+            }
+            if($request->request->get('event_id')){
+                $em = $this->getDoctrine()->getManager();
+                $event = $em->find(Event::class, ["id" => $request->get("event_id")]);
+
+                if ($event instanceof Event) {
+                    $lecture->setEvent($event);
+                }
             }
 
-            $errors = $validator->validate($event);
+            $errors = $validator->validate($lecture);
 
             if(count($errors) > 0){
                 return $this->json($errors, 400);
             }
 
-            $this->eventService->save($event);
+            $this->lectureService->save($lecture);
 
             $data = [
                 'status' => 200,
-                'success' => "Event updated with success",
-                'event' => $event
+                'success' => "Lecture updated with success",
+                'event' => $lecture
             ];
             return $this->response($data);
 
-        }catch (\Exception $e){
+        }catch (Exception $e){
             $data = [
                 'status' => 422,
                 'errors' => "Invalid",
@@ -137,8 +160,8 @@ class EventController extends AbstractController
      */
     public function delete(int $id): JsonResponse
     {
-        if (!empty($event = $this->eventService->delete($id))) {
-            return $this->json(["removed" => $event], 200);
+        if (!empty($lecture = $this->lectureService->delete($id))) {
+            return $this->json(["removed" => $lecture], 200);
         }
         return $this->json(["message" => "Not found by id $id"], 404);
     }

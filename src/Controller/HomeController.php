@@ -3,23 +3,20 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Entity\Lecture;
+use App\Form\LectureType;
 use App\Repository\EventRepository;
-
 use App\Repository\LectureRepository;
-use Exception;
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
+use Exception;
 
-///**
-// * @Route("web", name="web_")
-// */
 class HomeController extends AbstractController
 {
     private $twig;
@@ -32,7 +29,7 @@ class HomeController extends AbstractController
     /**
      * @Route("/", name="homepage")
      * @param EventRepository $eventRepository
-     * @return Exception|Response|LoaderError|RuntimeError|SyntaxError
+     * @return string|Response
      */
     public function index(EventRepository $eventRepository)
     {
@@ -41,25 +38,38 @@ class HomeController extends AbstractController
                 'events' => $eventRepository->findAll(),
             ]));
         } catch (LoaderError | RuntimeError | SyntaxError $e) {
-            return $e;
+            return $e->getMessage() . $e->getCode();
         }
     }
 
     /**
      * @Route("/evento/{id}", name="event")
+     * @param Request $request
      * @param Event $event
      * @param LectureRepository $lectureRepository
-     * @return Response
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
+     * @return string|Response
+     * @throws Exception
      */
-    public function show(Event $event, LectureRepository $lectureRepository): Response
+    public function show(Request $request, Event $event, LectureRepository $lectureRepository)
     {
+        $lecture = new Lecture();
+        $form = $this->createForm(LectureType::class, $lecture);
 
-        return new Response($this->twig->render('show.html.twig', [
-            'event' => $event,
-            'lectures' => $lectureRepository->findBy(['event' => $event]),
-        ]));
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $lecture->setEvent($event);
+            $lectureRepository->save($lecture);
+            return $this->redirectToRoute('evento', ['id' => $event->getId()]);
+        }
+
+//        try {
+            return new Response($this->twig->render('show.html.twig', [
+                'event' => $event,
+                'lectures' => $lectureRepository->findBy(['event' => $event]),
+                'lecture_form' => $form->createView()
+            ]));
+//        } catch (LoaderError | RuntimeError | SyntaxError $e) {
+//            return $e->getMessage() . $e->getCode();
+//        }
     }
 }

@@ -4,9 +4,9 @@
   <div class="container">
     <div class="row">
       <div class="col-md-10 ml-md-auto">
-        <div class="">
-          <div class="card bg-light mb-3 mt-5" style="width: 800px;">
-            <div class="card-body">
+        <div class="" style="margin-bottom: 5em">
+          <div class="card bg-light mb-3 mt-5" style="max-width: 600px;">
+            <div class="card-body" style="background-color: white;">
               <form class="form-horizontal" role="form" method="post">
                 {% if error %}
                   <div class="alert alert-danger">
@@ -18,9 +18,8 @@
                     <a href="{{ path('app_logout') }}">Logout</a>
                   </div>
                 {% endif %}
-                <div class="card-header mb-3">Digite as credenciais</div>
                 <div class="form-group">
-                  <label for="email" class="col-md-4 control-label">E-Mail</label>
+                  <label for="email" class="col-md-4 control-label">Email</label>
                   <div class="col-md-12">
                     <input
                         id="inputEmail"
@@ -51,11 +50,14 @@
                     value="{{ csrf_token('authenticate') }}"
                 />
                 <div class="form-group">
-                  <div class="col-md-12">
-                    <button type="submit" class="btn btn-primary">
-                      <i class="fa fa-btn fa-sign-in"></i> Login
+                  <ul class="text-right" style="margin-right: 2em">
+                    <a class="btn btn-outline-dark" href="{{ path('registration') }}">
+                      <i class="fa fa-btn fa-sign-in"></i> Cadastrar
+                    </a>
+                    <button type="submit" class="btn btn-outline-dark align-self-end">
+                      <i class="fa fa-btn fa-sign-in"></i> Entrar
                     </button>
-                  </div>
+                  </ul>
                 </div>
               </form>
             </div>
