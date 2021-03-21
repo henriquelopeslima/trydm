@@ -1,0 +1,37 @@
+{% block body %}
+  <div class="col-12 col-md-6 col-lg-3 mb-4">
+    <div class="card border shadow lift">
+      <div class="card-body">
+        <div class="card-title">
+          <h4 class="font-weight-light">
+            {{ event }}
+          </h4>
+          <hr>
+          <p>Data inicio: <span class="font-date">{{ event.getDateBegin|date('d/m/Y') }}</span> <br>Data final: <span class="font-date">{{ event.getDateEnd|date('d/m/Y') }}</span></p>
+        </div>
+        <div class="row">
+          <div class="col-4">
+            <a href="{{ path('event', { id: event.id }) }}"
+               class="btn btn-sm btn-outline-dark">
+              Abrir
+            </a>
+          </div>
+          {% if app.user %}
+            <div class="col-4">
+              <div href=""
+                   class="btn btn-sm btn-outline-warning editEvent" onclick="editEvent({{ event.id }})"  data-toggle="modal" data-target="#modalEditEvent" data-id="{{ event.id }}">
+                Editar
+              </div>
+            </div>
+            <div class="col-4">
+              <div href="" onclick="deleteEvent({{ event.id }})"
+                   class="btn btn-sm btn-outline-danger">
+                Excluir
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

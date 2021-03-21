@@ -3,6 +3,8 @@
 {% block title %}Evento - {{ event }}{% endblock %}
 
 {% block body %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
+
   <div class="row">
     <div class="col-8">
       <h1 style="font-family: 'Zilla Slab', serif; font-weight: 600;">{{ event }}</h1>
@@ -17,48 +19,9 @@
     <div class="col-12 col-lg-8">
       {% if lectures|length > 0 %}
         {% for lecture in lectures %}
-          <div class="media shadow border rounded-lg p-3 mb-4">
-            <div class="media-body">
-              <div class="row">
-                <div class="col-8">
-                  <h4 class="font-weight-light mb-0" data-toggle="collapse" href="#collapseExample{{ lecture.id }}" role="button" aria-expanded="false" aria-controls="collapseExample{{ lecture.id }}">
-                    {{ lecture.title }}
-                  </h4>
-                </div>
-                {% if app.user %}
-                  <div class="col-4 text-right">
-                    <div href=""
-                         class="btn btn-sm btn-outline-warning">
-                      Editar
-                    </div>
-                    <div href="" onclick="deleteLecture({{ lecture.id }}, {{ event.id }})"
-                         class="btn btn-sm btn-outline-danger">
-                      Excluir
-                    </div>
-                  </div>
-                {% endif %}
-              </div>
-              <div class="collapse" id="collapseExample{{ lecture.id }}">
-                <div class="mb-2">
-                </div>
-                <div class="comment-text">
-                  {{ lecture.description }}
-                </div>
-                <hr>
-                <div class="comment-text">
-                  {{ lecture.speaker }}
-                </div>
-              </div>
-            </div>
-          </div>
+          {{ include('lecture/widget.html.twig') }}
         {% endfor %}
         <div>Temos {{ lectures|length }} palestras cadastradas : )</div>
-        {# {% if previous >= 0 %}#}
-        {#     <a href="{{ path('event', { id: event.id, offset: previous }) }}">Voltar</a>#}
-        {# {% endif %}#}
-        {# {% if next < comments|length %}#}
-        {#     <a href="{{ path('event', { id: event.id, offset: next }) }}">Avançar</a>#}
-        {# {% endif %}#}
       {% else %}
         <div style="margin-bottom: 2rem; font-size: 22px">
           Não temos nenhuma palestra : /
@@ -67,10 +30,12 @@
     </div>
     <div class="col-12 col-lg-4">
       <div class="bg-light shadow border rounded-lg p-4" style="margin-bottom: 2em">
-        <h3 class="font-weight-light">
-          Adiciona uma palestra
-        </h3>
-        {{ include('lecture/create.html.twig') }}
+        <div id="create-lecture">
+          {{ include('lecture/create.html.twig') }}
+        </div>
+        <div id="edit-lecture">
+          {{ include('lecture/edit.html.twig') }}
+        </div>
       </div>
     </div>
   </div>
@@ -81,7 +46,11 @@
 
   <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
+
   <script>
+      let LectureID = 0;
+
       function deleteLecture(idLecture, idEvent) {
           Swal.fire({
               title: 'Tem certeza?',
@@ -114,6 +83,40 @@
           });
       }
 
+      async function editLecture(idLecture) {
+          console.log(idLecture);
+          LectureID = idLecture;
+          $('#create-lecture').hide();
+          $('#edit-lecture').show();
+          let lecture = await lectureById(idLecture);
+          setEditForm(lecture)
+      }
+
+      async function lectureById(idLecture) {
+          let resp = {};
+          await $.ajax({
+              url:'http://127.0.0.1:8000/api/lecture/' + idLecture,
+              type: 'GET',
+              datatype: 'json',
+              success: function(response) {
+                  resp = response["lecture"];
+              },
+              error: function(error) {
+                  console.log(error)
+              }
+          });
+          return resp;
+      }
+
+      function setEditForm(lecture){
+          $('#title_edit').val(lecture["title"]);
+          $('#date_begin_edit').val(moment(Date(lecture.date_begin)).format("DD/MM/YYYY"));
+          $('#hour_begin_edit').val(lecture["hour_begin"]);
+          $('#hour_end_edit').val(lecture["hour_end"]);
+          $('#speaker_edit').val(lecture["speaker"]);
+          $('#description_edit').val(lecture["description"]);
+      }
+
       function formatResult(form) {
           result = {};
           $.each($(form).serializeArray(), function() {
@@ -123,11 +126,17 @@
       }
 
       jQuery(function($) {
-          $(".date").mask("99/99/9999");
+          $('#edit-lecture').hide();
 
           $(".editEvent").click(function(){
               idEvent = $(this).data('id');
               console.log(idEvent);
+              $('#create-lecture').hide();
+              $('#edit-event').hide(false);
+          });
+
+          $('.datepicker').datepicker({
+              format: 'dd/mm/yyyy',
           });
 
           $("#form-create-lecture").validate({
@@ -182,7 +191,7 @@
                               'Palestra!',
                               'A palestra foi criada',
                               'success'
-                          ).then((_) => window.location.assign('http://127.0.0.1:8000/event/'+data.event_id));
+                          ).then((_) => window.location.assign('http://127.0.0.1:8000/evento/'+data.event_id));
                       },
                       error: function() {
                           Swal.fire({
@@ -212,47 +221,61 @@
                   date_begin: {
                       required: true,
                   },
-                  date_end: {
+                  hour_begin: {
                       required: true,
                   },
+                  hour_end: {
+                      required: true,
+                  },
+                  speaker: {
+                      required: true,
+                  },
+                  event_id: {
+                      required: true,
+                  }
               },
               submitHandler: function(form) {
                   $(form).find('button[type=submit]').addClass("disabled btn-progress");
                   let data = formatResult(form);
+                  console.log(data);
                   let date_begin = moment(Date(data.date_begin)).format("YYYY-MM-DD")
-                  let date_end = moment(Date(data.date_end)).format("YYYY-MM-DD")
+                  let hour_begin = moment(Date(data.hour_begin)).format("HH:MM")
+                  let hour_end = moment(Date(data.hour_end)).format("HH:MM")
                   $.ajax({
-                      url:'http://127.0.0.1:8000/api/event/update/' + idEvent,
+                      url:'http://127.0.0.1:8000/api/lecture/update/' + LectureID,
                       type: 'PUT',
                       datatype: 'json',
                       data: {
                           title: data.title,
                           description: data.description,
                           date_begin: date_begin,
-                          date_end: date_end,
+                          hour_begin: hour_begin,
+                          hour_end: hour_end,
+                          event_id: data.event_id,
+                          speaker: data.speaker
                       },
                       success: function(response) {
                           Swal.fire(
-                              'Atualizado!',
-                              'O evento foi atualizado',
+                              'Palestra!',
+                              'A palestra foi atualizada',
                               'success'
-                          ).then((_) => window.location.assign('http://127.0.0.1:8000/'));
+                          ).then((_) => window.location.assign('http://127.0.0.1:8000/evento/'+ response.lecture.event_id));
                       },
                       error: function() {
                           Swal.fire({
                               icon: 'error',
                               title: 'Oops...',
-                              text: 'Evento não atualizado!',
+                              text: 'Palestra não foi atualizada!',
                           })
                       },
                       complete: function() {
                           $(form).find('button[type=submit]').removeClass("disabled btn-progress");
                           $(form).reset();
-                          idEvent = 0;
                       }
                   });
               }
           });
+
       });
   </script>
 {% endblock %}

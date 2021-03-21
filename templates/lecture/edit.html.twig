@@ -1,50 +1,65 @@
 {% block body %}
+    <h3 class="font-weight-light">
+        Editar uma palestra
+    </h3>
+    <hr>
     <form id="form-edit-lecture">
         <div class="form-group">
-            <label for="title" class="col-form-label">Título:</label>
-            <input type="text" name="title" class="form-control" id="title">
+            <label for="title_edit" class="col-form-label">Título:</label>
+            <input type="text" name="title" class="form-control" id="title_edit">
         </div>
 
         <div class="form-group">
-            <div id="date_begin_parent" class="form-group">
-                <label for="date_begin" class="col-form-label">Data de inicio:</label>
-                <input type="date" name="date_begin" class="form-control" id="date_begin">
+            <div class="form-group">
+                <label for="date_begin_edit" class="col-form-label">Data de inicio:</label>
+                <input type="text" name="date_begin" class="form-control datepicker" id="date_begin_edit">
             </div>
         </div>
 
         <div class="form-row">
             <div class="col-lg-6">
-                <div id="date_begin_parent" class="form-group">
-                    <label for="hour_begin" class="col-form-label">Hora de inicio:</label>
-                    <input type="time" name="hour_begin" class="form-control" id="hour_begin">
+                <div class="form-group">
+                    <label for="hour_begin_edit" class="col-form-label">Hora de inicio:</label>
+                    <input type="time" name="hour_begin" class="form-control" id="hour_begin_edit">
                 </div>
             </div>
             <div class="col-lg-6">
-                <div id="hour_end_parent" class="form-group">
-                    <label for="hour_end" class="col-form-label">Hora final:</label>
-                    <input type="time" name="hour_end" class="form-control" id="hour_end">
+                <div class="form-group">
+                    <label for="hour_end_edit" class="col-form-label">Hora final:</label>
+                    <input type="time" name="hour_end" class="form-control" id="hour_end_edit">
                 </div>
             </div>
         </div>
 
         <div class="form-group">
-            <label for="speaker" class="col-form-label">Palestrante:</label>
-            <input type="text" name="speaker" class="form-control" id="speaker">
+            <label for="speaker_edit" class="col-form-label">Palestrante:</label>
+            <input type="text" name="speaker" class="form-control" id="speaker_edit">
         </div>
 
         <div class="form-group">
-            <label for="description" class="col-form-label">Descrição:</label>
-            <textarea class="form-control" name="description" id="description"></textarea>
+            <label for="description_edit" class="col-form-label">Descrição:</label>
+            <textarea class="form-control" name="description" id="description_edit"></textarea>
         </div>
 
         <div class="form-group">
-            <input type="hidden" class="form-control" name="event_id" id="event_id" value="{{ event.id }}">
+            <input type="hidden" class="form-control" name="event_id" id="event_id_edit" value="{{ event.id }}">
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-outline-danger" onclick="cancelEdit()">Cancelar</button>
             <button type="submit" class="btn btn-outline-dark">Editar</button>
         </div>
     </form>
+    <script>
+        function cancelEdit() {
+            $(':input','#edit-lecture')
+                .not(':button, :submit, :reset, :hidden')
+                .val('')
+                .removeAttr('checked')
+                .removeAttr('selected');
+            $("#edit-lecture").hide();
+            $("#create-lecture").show();
+        }
+    </script>
 {% endblock %}
 
