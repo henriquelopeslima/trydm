@@ -35,10 +35,14 @@
         <script>
             let EventID = 0;
 
-            function createEvent(){}
+            function FormataStringData(data) {
+                var dia  = data.split("/")[0];
+                var mes  = data.split("/")[1];
+                var ano  = data.split("/")[2];
+                return ano + '-' + ("0"+mes).slice(-2) + '-' + ("0"+dia).slice(-2);
+            }
 
             async function editEvent(IdEvent) {
-                console.log(IdEvent);
                 EventID = IdEvent;
                 let event = await eventById(EventID);
                 setEditForm(event)
@@ -62,8 +66,8 @@
 
             function setEditForm(event){
                 $('#title_edit').val(event["title"]);
-                $('#date_begin_edit').val(moment(Date(event.date_begin)).format("DD/MM/YYYY"));
-                $('#date_end_edit').val(moment(Date(event.date_end)).format("DD/MM/YYYY"));
+                $('#date_begin_edit').val(moment(event.date_begin).format("DD/MM/YYYY"));
+                $('#date_end_edit').val(moment(event.date_end).format("DD/MM/YYYY"));
                 $('#description_edit').val(event["description"]);
             }
 
@@ -75,8 +79,8 @@
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sim, simbora!',
-                    cancelButtonText: 'Naum minino'
+                    confirmButtonText: 'Sim!',
+                    cancelButtonText: 'Não'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         Swal.fire(
@@ -100,7 +104,7 @@
             }
 
             function formatResult(form) {
-                result = {};
+                let result = {};
                 $.each($(form).serializeArray(), function() {
                     result[this.name] = this.value;
                 });
@@ -108,7 +112,6 @@
             }
 
             jQuery(function($) {
-
                 $('.datepicker').datepicker({
                     format: 'dd/mm/yyyy',
                 });
@@ -116,7 +119,6 @@
                 // TODO set in inputs of edition, the information's about the event
                 $(".editEvent").click(function(){
                     EventID = $(this).data('id');
-                    console.log(EventID);
                 });
 
                 $("#form-create-event").validate({
@@ -139,8 +141,6 @@
                     submitHandler: function(form) {
                         $(form).find('button[type=submit]').addClass("disabled btn-progress");
                         let data = formatResult(form);
-                        let date_begin = moment(Date(data.date_begin)).format("YYYY-MM-DD")
-                        let date_end = moment(Date(data.date_end)).format("YYYY-MM-DD")
                         $.ajax({
                             url:'http://127.0.0.1:8000/api/event/create',
                             type: 'POST',
@@ -148,8 +148,8 @@
                             data: {
                                 title: data.title,
                                 description: data.description,
-                                date_begin: date_begin,
-                                date_end: date_end,
+                                date_begin: data.date_begin,
+                                date_end: data.date_end,
                             },
                             success: function(response) {
                                 Swal.fire(
@@ -167,7 +167,6 @@
                             },
                             complete: function() {
                                 $(form).find('button[type=submit]').removeClass("disabled btn-progress");
-                                $(form).reset();
                             }
                         });
                     }
@@ -193,8 +192,7 @@
                     submitHandler: function(form) {
                         $(form).find('button[type=submit]').addClass("disabled btn-progress");
                         let data = formatResult(form);
-                        let date_begin = moment(Date(data.date_begin)).format("YYYY-MM-DD")
-                        let date_end = moment(Date(data.date_end)).format("YYYY-MM-DD")
+                        console.log(data)
                         $.ajax({
                             url:'http://127.0.0.1:8000/api/event/update/' + EventID,
                             type: 'PUT',
@@ -202,8 +200,8 @@
                             data: {
                                 title: data.title,
                                 description: data.description,
-                                date_begin: date_begin,
-                                date_end: date_end,
+                                date_begin: FormataStringData(data.date_begin),
+                                date_end: FormataStringData(data.date_end),
                             },
                             success: function(response) {
                                 Swal.fire(
@@ -221,7 +219,6 @@
                             },
                             complete: function() {
                                 $(form).find('button[type=submit]').removeClass("disabled btn-progress");
-                                $(form).reset();
                                 EventID = 0;
                             }
                         });

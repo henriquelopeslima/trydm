@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Event;
 use App\Services\EventService;
+use DateTime;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -68,8 +69,8 @@ class EventController extends AbstractController
 
             $event->setTitle($request->get('title') ?? "");
             $event->setDescription($request->get('description') ?? "");
-            $event->setDateBegin( new \DateTime($request->get('date_begin')));
-            $event->setDateEnd( new \DateTime($request->get('date_end')));
+            $event->setDateBegin(DateTime::createFromFormat('Y-m-d', $request->get('date_begin')));
+            $event->setDateEnd(DateTime::createFromFormat('Y-m-d', $request->get('date_end')));
 
             $errors = $validator->validate($event);
 
@@ -119,10 +120,10 @@ class EventController extends AbstractController
                 $event->setDescription($request->get('description') ?? "");
             }
             if($request->request->get('date_begin')){
-                $event->setDateBegin(new \DateTime($request->get('date_begin')));
+                $event->setDateBegin(DateTime::createFromFormat('Y-m-d', $request->get('date_begin')));
             }
             if($request->request->get('date_end')){
-                $event->setDateEnd(new \DateTime($request->get('date_end')));
+                $event->setDateEnd(DateTime::createFromFormat('Y-m-d', $request->get('date_end')));
             }
 
             $errors = $validator->validate($event);
