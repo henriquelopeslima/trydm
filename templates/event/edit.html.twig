@@ -34,12 +34,24 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-outline-danger" onclick="cancelEditEvent()" data-dismiss="modal">Cancelar</button>
                         <button type="submit"  class="btn btn-outline-dark">Editar</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
+    <script>
+        function cancelEditEvent() {
+            $(':input','#form-edit-event')
+                .not(':button, :submit, :reset, :hidden')
+                .val('')
+                .removeAttr('checked')
+                .removeAttr('selected');
+            $("#edit-lecture").hide();
+            $("#create-lecture").show();
+        }
+    </script>
 {% endblock %}
 

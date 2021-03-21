@@ -46,12 +46,13 @@
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn btn-outline-danger" onclick="cancelEdit()">Cancelar</button>
+            <button type="button" class="btn btn-outline-danger" onclick="cancelEditLecture()">Cancelar</button>
             <button type="submit" class="btn btn-outline-dark">Editar</button>
         </div>
     </form>
+
     <script>
-        function cancelEdit() {
+        function cancelEditLecture() {
             $(':input','#edit-lecture')
                 .not(':button, :submit, :reset, :hidden')
                 .val('')

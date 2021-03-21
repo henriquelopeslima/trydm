@@ -62,14 +62,14 @@ class HomeController extends AbstractController
             return $this->redirectToRoute('evento', ['id' => $event->getId()]);
         }
 
-//        try {
+        try {
             return new Response($this->twig->render('show.html.twig', [
                 'event' => $event,
                 'lectures' => $lectureRepository->findBy(['event' => $event]),
                 'lecture_form' => $form->createView()
             ]));
-//        } catch (LoaderError | RuntimeError | SyntaxError $e) {
-//            return $e->getMessage() . $e->getCode();
-//        }
+        } catch (LoaderError | RuntimeError | SyntaxError $e) {
+            return $e->getMessage() . $e->getCode();
+        }
     }
 }

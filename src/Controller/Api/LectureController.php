@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use DateTime;
 use Exception;
 use App\Entity\Event;
 use App\Entity\Lecture;
@@ -67,12 +68,11 @@ class LectureController extends AbstractController
             $request = $this->transformJsonBody($request);
 
             $lecture = new Lecture();
-
             $lecture->setTitle($request->get('title') ?? "");
             $lecture->setDescription($request->get('description') ?? "");
-            $lecture->setDate( new \DateTime((date("Y-m-d", strtotime($request->get("date"))))));
-            $lecture->setHourBegin( new \DateTime((date("H:i", strtotime($request->get("hour_begin"))))));
-            $lecture->setHourEnd( new \DateTime((date("H:i", strtotime($request->get("hour_end"))))));
+            $lecture->setDate(DateTime::createFromFormat('Y-m-d', $request->get('date')));
+            $lecture->setHourBegin(DateTime::createFromFormat('h:m', $request->get('hour_begin')));
+            $lecture->setHourEnd(DateTime::createFromFormat('h:m', $request->get('hour_end')));
             $lecture->setSpeaker($request->get('speaker') ?? "");
 
             $em = $this->getDoctrine()->getManager();
@@ -129,13 +129,13 @@ class LectureController extends AbstractController
                 $lecture->setDescription($request->get('description') ?? "");
             }
             if($request->request->get('date')){
-                $lecture->setDate( new \DateTime((date("Y-m-d", strtotime($request->get("date"))))));
+                $lecture->setDate(DateTime::createFromFormat('Y-m-d', $request->get('date')));
             }
             if($request->request->get('hour_begin')){
-                $lecture->setHourBegin( new \DateTime((date("H:i", strtotime($request->get("hour_begin"))))));
+                $lecture->setHourBegin(DateTime::createFromFormat('h:m', $request->get('hour_begin')));
             }
             if($request->request->get('hour_end')){
-                $lecture->setHourEnd( new \DateTime((date("H:i", strtotime($request->get("hour_end"))))));
+                $lecture->setHourEnd(DateTime::createFromFormat('h:m', $request->get('hour_end')));
             }
             if($request->request->get('speaker')){
                 $lecture->setSpeaker($request->get('speaker') ?? "");

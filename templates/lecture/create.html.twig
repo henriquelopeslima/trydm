@@ -46,9 +46,21 @@
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-outline-danger" onclick="cancelAddLecture()" data-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn btn-outline-dark">Criar</button>
         </div>
     </form>
+
+    <script>
+        function cancelAddLecture() {
+            $(':input','#create-lecture')
+                .not(':button, :submit, :reset, :hidden')
+                .val('')
+                .removeAttr('checked')
+                .removeAttr('selected');
+            $("#edit-lecture").hide();
+            $("#create-lecture").show();
+        }
+    </script>
 {% endblock %}
 
