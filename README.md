@@ -60,6 +60,7 @@ As seguintes ferramentas foram usadas na construção do projeto:
 
 - [Symfony](https://symfony.com)
 - [Git](https://git-scm.com)
+- [Docker](https://www.docker.com)
 
 ## :white_check_mark: Pré requisitos ##
 
@@ -74,13 +75,22 @@ $ git clone https://github.com/henriquelopeslima/trydm
 # Entre na pasta
 $ cd trydm
 
+# Inicie o container, se estiver usando pela segunda vez apenas faça "docker-compose start"
+$ docker-compose up -d
+
 # Inicie o servidor  
 $ symfony serve -d
+
+# Migrations  
+$ symfony console doctrine:migrations:migrate
+
+# Fixtures  
+$ symfony console doctrine:fixture:load
 
 # Para abrir no navegador
 $ symfony open:local
 
-# Agora baste usar : )
+# Agora basta estudar : )
 ```
 
 ## :memo: Licença ##
