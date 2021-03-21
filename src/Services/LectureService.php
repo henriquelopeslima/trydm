@@ -41,7 +41,7 @@ class LectureService
         return $this->repository->findAll();
     }
 
-    public function getById($id): Lecture
+    public function getById($id): ?Lecture
     {
         return $this->repository->findOneBy(['id' => $id]);
     }

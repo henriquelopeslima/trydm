@@ -23,9 +23,4 @@ class AuthController extends AbstractController
         $em->flush();
         return $this->json(["new user" => $user]);
     }
-
-    public function api(): JsonResponse
-    {
-        return $this->json($this->getUser()->getUsername());
-    }
 }

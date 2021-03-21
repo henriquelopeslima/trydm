@@ -163,6 +163,7 @@ class Lecture implements \JsonSerializable
             'date' => $this->getDate()->format("Y-m-d"),
             'hour_begin' => $this->getHourBegin()->format("h:i"),
             'hour_end' => $this->getHourEnd()->format("h:i"),
+            'speaker' => $this->getSpeaker(),
             'event_id' => $this->getEvent()->getId()
         ];
     }

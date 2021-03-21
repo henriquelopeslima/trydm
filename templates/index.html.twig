@@ -1,8 +1,11 @@
 {% extends 'base.html.twig' %}
 
+
 {% block title %}Eventos{% endblock %}
 
 {% block body %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
+
     <div class="row">
         {% if app.user %}
             <div class="col-12 text-center" style="margin-bottom: 2em">
@@ -18,41 +21,7 @@
     {% for row in events|batch(4) %}
         <div class="row">
             {% for event in row %}
-                <div class="col-12 col-md-6 col-lg-3 mb-4">
-                    <div class="card border shadow lift">
-                        <div class="card-body">
-                            <div class="card-title">
-                                <h4 class="font-weight-light">
-                                    {{ event }}
-                                </h4>
-                                <hr>
-                                <p>Data inicio: <span class="font-date">{{ event.getDateBegin|date('d/m/Y') }}</span> <br>Data final: <span class="font-date">{{ event.getDateEnd|date('d/m/Y') }}</span></p>
-                            </div>
-                            <div class="row">
-                                <div class="col-4">
-                                    <a href="{{ path('event', { id: event.id }) }}"
-                                       class="btn btn-sm btn-outline-dark">
-                                        Abrir
-                                    </a>
-                                </div>
-                                {% if app.user %}
-                                    <div class="col-4">
-                                        <div href=""
-                                             class="btn btn-sm btn-outline-warning editEvent"  data-toggle="modal" data-target="#modalEditEvent" data-id="{{ event.id }}">
-                                            Editar
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div href="" onclick="deleteEvent({{ event.id }})"
-                                             class="btn btn-sm btn-outline-danger">
-                                            Excluir
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {{ include('event/widget.html.twig') }}
             {% endfor %}
         </div>
     {% endfor %}
@@ -61,15 +30,42 @@
         <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js" integrity="sha512-UdIMMlVx0HEynClOIFSyOrPggomfhBKJE28LKl8yR3ghkgugPnG6iLfRfHwushZl1MOPSY6TsuBDGPK2X4zYKg==" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw==" crossorigin="anonymous"></script>
-
         <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
         <script>
-            let idEvent = 0;
+            let EventID = 0;
 
             function createEvent(){}
 
-            function editEvent(){}
+            async function editEvent(IdEvent) {
+                console.log(IdEvent);
+                EventID = IdEvent;
+                let event = await eventById(EventID);
+                setEditForm(event)
+            }
+
+            async function eventById(EventID) {
+                let resp = {};
+                await $.ajax({
+                    url:'http://127.0.0.1:8000/api/event/' + EventID,
+                    type: 'GET',
+                    datatype: 'json',
+                    success: function(response) {
+                        resp = response["event"];
+                    },
+                    error: function(error) {
+                        console.log(error)
+                    }
+                });
+                return resp;
+            }
+
+            function setEditForm(event){
+                $('#title_edit').val(event["title"]);
+                $('#date_begin_edit').val(moment(Date(event.date_begin)).format("DD/MM/YYYY"));
+                $('#date_end_edit').val(moment(Date(event.date_end)).format("DD/MM/YYYY"));
+                $('#description_edit').val(event["description"]);
+            }
 
             function deleteEvent(id) {
                 Swal.fire({
@@ -112,11 +108,15 @@
             }
 
             jQuery(function($) {
-                $(".date").mask("99/99/9999");
 
+                $('.datepicker').datepicker({
+                    format: 'dd/mm/yyyy',
+                });
+
+                // TODO set in inputs of edition, the information's about the event
                 $(".editEvent").click(function(){
-                    idEvent = $(this).data('id');
-                    console.log(idEvent);
+                    EventID = $(this).data('id');
+                    console.log(EventID);
                 });
 
                 $("#form-create-event").validate({
@@ -196,7 +196,7 @@
                         let date_begin = moment(Date(data.date_begin)).format("YYYY-MM-DD")
                         let date_end = moment(Date(data.date_end)).format("YYYY-MM-DD")
                         $.ajax({
-                            url:'http://127.0.0.1:8000/api/event/update/' + idEvent,
+                            url:'http://127.0.0.1:8000/api/event/update/' + EventID,
                             type: 'PUT',
                             datatype: 'json',
                             data: {
@@ -222,7 +222,7 @@
                             complete: function() {
                                 $(form).find('button[type=submit]').removeClass("disabled btn-progress");
                                 $(form).reset();
-                                idEvent = 0;
+                                EventID = 0;
                             }
                         });
                     }

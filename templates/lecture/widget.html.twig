@@ -1,0 +1,44 @@
+{% block body %}
+  <div class="media shadow border rounded-lg p-3 mb-4">
+    <div class="media-body">
+      <div class="row">
+        <div class="col-8">
+          <h4 class="font-weight-light mb-0" data-toggle="collapse" href="#collapseExample{{ lecture.id }}" role="button" aria-expanded="false" aria-controls="collapseExample{{ lecture.id }}">
+            {{ lecture.title }}
+          </h4>
+        </div>
+        {% if app.user %}
+          <div class="col-4 text-right">
+            <div href="" onclick="editLecture({{ lecture.id }})"
+                 class="btn btn-sm btn-outline-warning">
+              Editar
+            </div>
+            <div href="" onclick="deleteLecture({{ lecture.id }}, {{ event.id }})"
+                 class="btn btn-sm btn-outline-danger">
+              Excluir
+            </div>
+          </div>
+        {% endif %}
+      </div>
+      <div class="collapse" id="collapseExample{{ lecture.id }}">
+        <div class="mb-2">
+        </div>
+        <div class="comment-text">
+          {{ lecture.description }}
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-6 comment-text">
+            {{ lecture.speaker }}
+          </div>
+          <div class="col-6 comment-text text-right">
+              {{ lecture.date|date('d/m/Y') }} <br>
+              {{ lecture.hourBegin|date('H:i') }} - {{ lecture.hourEnd|date('H:i') }}
+          </div>
+          <div class="comment-text">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

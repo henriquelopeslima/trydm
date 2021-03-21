@@ -34,6 +34,26 @@ class EventController extends AbstractController
     }
 
     /**
+     * @Route("/{id}", name="_get_by_id", methods={"GET"})
+     * @param int $id
+     * @return string|JsonResponse
+     */
+    public function getById(int $id)
+    {
+        $event = $this->eventService->getById($id);
+        if($event == null){
+            return  $this->response([
+                'status' => 404,
+                'message' => "Event not found",
+            ]);
+        }
+        return $this->response([
+            'status' => 200,
+            'event' => $event,
+        ]);
+    }
+
+    /**
      * @Route("/create", name="_create", methods={"POST"})
      * @param Request $request
      * @param ValidatorInterface $validator

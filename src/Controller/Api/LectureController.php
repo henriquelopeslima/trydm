@@ -28,10 +28,31 @@ class LectureController extends AbstractController
 
     /**
      * @Route("/", name="_get_all", methods={"GET"})
+     * @return Response
      */
     public function index(): Response
     {
         return $this->json($this->lectureService->findAll());
+    }
+
+    /**
+     * @Route("/{id}", name="_get_by_id", methods={"GET"})
+     * @param int $id
+     * @return string|JsonResponse
+     */
+    public function getById(int $id)
+    {
+        $lecture = $this->lectureService->getById($id);
+        if($lecture == null){
+            return  $this->response([
+                'status' => 404,
+                'message' => "Lecture not found",
+            ]);
+        }
+        return $this->response([
+            'status' => 200,
+            'lecture' => $lecture,
+        ]);
     }
 
     /**
@@ -139,7 +160,7 @@ class LectureController extends AbstractController
             $data = [
                 'status' => 200,
                 'success' => "Lecture updated with success",
-                'event' => $lecture
+                'lecture' => $lecture
             ];
             return $this->response($data);
 

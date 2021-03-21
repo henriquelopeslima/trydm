@@ -1,4 +1,8 @@
 {% block body %}
+    <h3 class="font-weight-light">
+        Adiciona uma palestra
+    </h3>
+    <hr>
     <form id="form-create-lecture">
         <div class="form-group">
             <label for="title" class="col-form-label">Título:</label>
@@ -8,7 +12,7 @@
         <div class="form-group">
             <div id="date_begin_parent" class="form-group">
                 <label for="date_begin" class="col-form-label">Data de inicio:</label>
-                <input type="date" name="date_begin" class="form-control" id="date_begin">
+                <input type="text" name="date_begin" class="form-control datepicker" id="date_begin">
             </div>
         </div>
 
